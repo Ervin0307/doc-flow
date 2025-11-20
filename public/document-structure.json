@@ -1,0 +1,97 @@
+{
+  "Abstract": {
+    "content": [
+      "This paper presents a comprehensive analysis of hierarchical document structures and their applications in modern information systems.",
+      "We explore various parsing techniques and their effectiveness in extracting semantic meaning from complex documents."
+    ],
+    "children": {}
+  },
+  "1. Introduction": {
+    "content": [
+      "Document structure analysis has become increasingly important in the digital age.",
+      "The ability to automatically parse and understand document hierarchies enables better information retrieval and knowledge management."
+    ],
+    "children": {
+      "1.1 Background": {
+        "content": [
+          "Traditional document processing relied heavily on manual annotation and classification.",
+          "Recent advances in natural language processing have opened new possibilities for automated structure extraction."
+        ],
+        "children": {}
+      },
+      "1.2 Motivation": {
+        "content": [
+          "The exponential growth of digital documents necessitates scalable parsing solutions.",
+          "Hierarchical representations provide intuitive navigation and improved comprehension."
+        ],
+        "children": {}
+      }
+    }
+  },
+  "2. Methodology": {
+    "content": [
+      "Our approach combines multiple techniques to achieve robust document parsing.",
+      "We leverage both rule-based and machine learning methods for optimal results."
+    ],
+    "children": {
+      "2.1 PDF Conversion": {
+        "content": [
+          "We utilize marker-pdf for initial conversion to Markdown format.",
+          "This step preserves structural information while simplifying subsequent processing."
+        ],
+        "children": {
+          "2.1.1 Preprocessing": {
+            "content": [
+              "Documents undergo cleaning to remove artifacts and normalize formatting.",
+              "Special attention is paid to handling tables, figures, and mathematical notation."
+            ],
+            "children": {}
+          }
+        }
+      },
+      "2.2 Structure Extraction": {
+        "content": [
+          "Table of contents generation uses pdfminer for accurate heading detection.",
+          "Hierarchical relationships are established through heading level analysis."
+        ],
+        "children": {}
+      },
+      "2.3 Node Creation": {
+        "content": [
+          "A recursive tree structure is built to represent the document hierarchy.",
+          "Each node contains content and references to its children."
+        ],
+        "children": {}
+      }
+    }
+  },
+  "3. Results": {
+    "content": [
+      "Our system successfully parsed 95% of test documents with high accuracy.",
+      "Performance metrics demonstrate significant improvements over baseline methods."
+    ],
+    "children": {
+      "3.1 Quantitative Analysis": {
+        "content": [
+          "Precision and recall scores exceeded 0.90 across all document types.",
+          "Processing time averaged 2.3 seconds per document."
+        ],
+        "children": {}
+      },
+      "3.2 Qualitative Evaluation": {
+        "content": [
+          "User studies indicated high satisfaction with the hierarchical representation.",
+          "Navigation efficiency improved by 40% compared to traditional linear views."
+        ],
+        "children": {}
+      }
+    }
+  },
+  "4. Conclusion": {
+    "content": [
+      "We have demonstrated an effective approach to hierarchical document parsing.",
+      "Future work will focus on handling more complex document types and multilingual support."
+    ],
+    "children": {}
+  }
+}
