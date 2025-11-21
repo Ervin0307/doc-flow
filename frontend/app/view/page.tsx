@@ -1,5 +1,18 @@
 'use client'
 
+// Apply polyfill BEFORE any imports
+if (typeof Promise !== 'undefined' && !(Promise as any).withResolvers) {
+  (Promise as any).withResolvers = function <T>() {
+    let resolve: (value: T | PromiseLike<T>) => void;
+    let reject: (reason?: any) => void;
+    const promise = new Promise<T>((res, rej) => {
+      resolve = res;
+      reject = rej;
+    });
+    return { promise, resolve: resolve!, reject: reject! };
+  };
+}
+
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
@@ -12,21 +25,6 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { getDocumentById } from '@/lib/api'
 import { DocumentStructure } from '@/types/document'
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css'
-import 'react-pdf/dist/esm/Page/TextLayer.css'
-
-// Polyfill for Promise.withResolvers if not available
-if (typeof Promise !== 'undefined' && !Promise.withResolvers) {
-  Promise.withResolvers = function <T>() {
-    let resolve: (value: T | PromiseLike<T>) => void;
-    let reject: (reason?: any) => void;
-    const promise = new Promise<T>((res, rej) => {
-      resolve = res;
-      reject = rej;
-    });
-    return { promise, resolve: resolve!, reject: reject! };
-  };
-}
 
 // Configure PDF.js worker
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`
@@ -41,10 +39,6 @@ interface ContentItem {
 interface DocumentNode {
   content: ContentItem[]
   children: Array<Record<string, DocumentNode>>
-}
-
-interface DocumentStructure {
-  root: DocumentNode
 }
 
 export default function ViewPage() {
