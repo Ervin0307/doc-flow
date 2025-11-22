@@ -87,6 +87,49 @@ export class DocumentService {
       return false;
     }
   }
+
+  /**
+   * Get all images for a specific document
+   */
+  async getDocumentImages(documentId: string): Promise<string[]> {
+    try {
+      const docPath = path.join(OUTPUTS_DIR, documentId);
+      
+      // Check if the directory exists
+      try {
+        await fs.access(docPath);
+      } catch {
+        throw new Error(`Document with id "${documentId}" not found`);
+      }
+      
+      const entries = await fs.readdir(docPath, { withFileTypes: true });
+      
+      // Filter for image files (jpeg, jpg, png)
+      const images = entries
+        .filter(entry => {
+          if (!entry.isFile()) return false;
+          const ext = path.extname(entry.name).toLowerCase();
+          return ['.jpeg', '.jpg', '.png'].includes(ext);
+        })
+        .map(entry => entry.name)
+        .sort(); // Sort alphabetically
+      
+      return images;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      console.error('Error reading document images:', error);
+      throw new Error('Failed to read document images');
+    }
+  }
+
+  /**
+   * Get the full path to an image file
+   */
+  getImagePath(documentId: string, imageName: string): string {
+    return path.join(OUTPUTS_DIR, documentId, imageName);
+  }
 }
 
 export const documentService = new DocumentService();
