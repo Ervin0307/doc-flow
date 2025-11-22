@@ -30,7 +30,7 @@ import * as Accordion from '@radix-ui/react-accordion'
 import { ModeToggle } from '@/components/mode-toggle'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import { getDocumentById } from '@/lib/api'
+import { getDocumentById, getDocumentImages, getImageUrl } from '@/lib/api'
 import { DocumentStructure } from '@/types/document'
 
 // Configure PDF.js worker
@@ -64,7 +64,8 @@ export default function ViewPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [pdfUrl, setPdfUrl] = useState<string>('')
-  const [contentFilter, setContentFilter] = useState<'all' | 'text' | 'table'>('all')
+  const [contentFilter, setContentFilter] = useState<'all' | 'text' | 'table' | 'image'>('all')
+  const [documentImages, setDocumentImages] = useState<string[]>([])
 
   useEffect(() => {
     // Fetch the document structure from the backend
@@ -82,6 +83,16 @@ export default function ViewPage() {
         
         // Set the PDF URL based on the document ID
         setPdfUrl(`/pdfs/${documentId}.pdf`)
+        
+        // Fetch images for this document
+        try {
+          const images = await getDocumentImages(documentId)
+          setDocumentImages(images)
+        } catch (imgErr) {
+          console.error('Failed to load images:', imgErr)
+          // Don't fail the whole page if images can't be loaded
+          setDocumentImages([])
+        }
         
         setError(null)
       } catch (err) {
@@ -238,14 +249,15 @@ export default function ViewPage() {
                <DropdownMenuTrigger asChild>
                  <Button variant="outline" size="sm" className="h-7 text-xs gap-1.5">
                    <Filter className="w-3 h-3" />
-                   {contentFilter === 'all' ? 'All' : contentFilter === 'text' ? 'Text' : 'Tables'}
+                   {contentFilter === 'all' ? 'All' : contentFilter === 'text' ? 'Text' : contentFilter === 'table' ? 'Tables' : 'Images'}
                  </Button>
                </DropdownMenuTrigger>
                <DropdownMenuContent align="end" className="w-32">
-                 <DropdownMenuRadioGroup value={contentFilter} onValueChange={(value) => setContentFilter(value as 'all' | 'text' | 'table')}>
+                 <DropdownMenuRadioGroup value={contentFilter} onValueChange={(value) => setContentFilter(value as 'all' | 'text' | 'table' | 'image')}>
                    <DropdownMenuRadioItem value="all">All</DropdownMenuRadioItem>
                    <DropdownMenuRadioItem value="text">Text</DropdownMenuRadioItem>
                    <DropdownMenuRadioItem value="table">Tables</DropdownMenuRadioItem>
+                   <DropdownMenuRadioItem value="image">Images</DropdownMenuRadioItem>
                  </DropdownMenuRadioGroup>
                </DropdownMenuContent>
              </DropdownMenu>
@@ -263,6 +275,42 @@ export default function ViewPage() {
                     Back to Dashboard
                   </Button>
                 </Link>
+              </div>
+            ) : contentFilter === 'image' ? (
+              // Show images when image filter is selected
+              <div className="space-y-4">
+                <h2 className="text-lg font-semibold text-foreground mb-4">Document Images</h2>
+                {documentImages.length > 0 ? (
+                  <div className="grid grid-cols-1 gap-4">
+                    {documentImages.map((imageName, idx) => (
+                      <div 
+                        key={idx}
+                        className="border border-border rounded-lg p-4 bg-card hover:shadow-lg transition-shadow"
+                      >
+                        <div className="flex flex-col gap-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-mono text-muted-foreground">{imageName}</span>
+                            <span className="px-2 py-0.5 text-[10px] font-medium rounded-full border bg-purple-500/20 text-purple-700 dark:text-purple-300 border-purple-500/30">
+                              IMAGE
+                            </span>
+                          </div>
+                          <div className="flex justify-center items-center bg-muted/30 rounded-md p-4">
+                            <img 
+                              src={getImageUrl(documentId || '', imageName)}
+                              alt={imageName}
+                              className="max-w-full h-auto rounded shadow-md"
+                              loading="lazy"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-muted-foreground text-sm text-center py-12">
+                    No images found in this document
+                  </div>
+                )}
               </div>
             ) : documentData ? (
               <JsonAccordion node={documentData.root} depth={0} title="Document Root" filter={contentFilter} isRoot={true} />
@@ -339,7 +387,7 @@ export default function ViewPage() {
 }
 
 // Helper function to check if a node or its children have matching content
-function nodeHasMatchingContent(node: DocumentNode, filter: 'all' | 'text' | 'table'): boolean {
+function nodeHasMatchingContent(node: DocumentNode, filter: 'all' | 'text' | 'table' | 'image'): boolean {
   // Check if this node has matching content
   if (node.content && node.content.length > 0) {
     const hasMatchingContent = node.content.some((item: ContentItem) => {
@@ -360,7 +408,7 @@ function nodeHasMatchingContent(node: DocumentNode, filter: 'all' | 'text' | 'ta
   return false
 }
 
-function JsonAccordion({ node, depth = 0, title, filter = 'all', isRoot = false }: { node: DocumentNode; depth?: number; title: string; filter?: 'all' | 'text' | 'table'; isRoot?: boolean }) {
+function JsonAccordion({ node, depth = 0, title, filter = 'all', isRoot = false }: { node: DocumentNode; depth?: number; title: string; filter?: 'all' | 'text' | 'table' | 'image'; isRoot?: boolean }) {
   // Define color schemes for each level (up to 5 levels)
   const levelColors = [
     { 
