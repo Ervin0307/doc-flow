@@ -124,12 +124,6 @@ export class DocumentService {
     }
   }
 
-  /**
-   * Get the full path to an image file
-   */
-  getImagePath(documentId: string, imageName: string): string {
-    return path.join(OUTPUTS_DIR, documentId, imageName);
-  }
 }
 
 export const documentService = new DocumentService();

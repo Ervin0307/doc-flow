@@ -2,9 +2,10 @@ import express, { Application } from 'express';
 import cors from 'cors';
 import documentRoutes from './routes/documentRoutes';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
+import { OUTPUTS_DIR } from './config/paths';
 
 const app: Application = express();
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 5002;
 
 // Middleware
 app.use(cors({
@@ -13,6 +14,9 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Serve images as static files
+app.use('/images', express.static(OUTPUTS_DIR));
 
 // Request logging
 app.use((req, res, next) => {
