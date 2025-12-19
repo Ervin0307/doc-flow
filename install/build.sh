@@ -50,9 +50,9 @@ echo -e "\n${GREEN}Building images...${NC}\n"
 # Build using docker-compose
 echo "Building with docker-compose..."
 if [ ! -z "$USE_PROXY" ]; then
-    docker-compose build $USE_PROXY
+    sudo docker compose build $USE_PROXY
 else
-    docker-compose build
+    sudo docker compose build
 fi
 
 echo -e "\n${GREEN}Build completed successfully!${NC}"

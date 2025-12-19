@@ -25,7 +25,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install all dependencies (including dev)
-RUN npm ci
+RUN npm install
 
 # Copy the rest of the application
 COPY . .
@@ -55,7 +55,7 @@ ENV no_proxy=${no_proxy}
 
 # Copy only necessary files
 COPY --from=builder /app/package*.json ./
-RUN npm ci --omit=dev --ignore-scripts
+RUN npm install --omit=dev --ignore-scripts
 
 # Copy built Next.js output
 COPY --from=builder /app/.next ./.next
@@ -63,7 +63,6 @@ COPY --from=builder /app/public ./public
 
 # If you're using custom config or instrumentation
 COPY --from=builder /app/next.config.mjs ./
-COPY --from=builder /app/instrumentation.ts ./
 
 # Expose the correct port
 EXPOSE 3000
