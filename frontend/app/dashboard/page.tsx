@@ -43,6 +43,7 @@ function DashboardContent() {
   const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({
     tags: [],
   })
+  
   const [documents, setDocuments] = useState<DocumentMetadata[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

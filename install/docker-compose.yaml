@@ -46,9 +46,9 @@ services:
       - BATCH_OUTPUTS_DIR=/data/batch_processing
       - PDFS_DIR=/data/pdfs
     volumes:
-      - /home/ritik-intel/pdf-results:/data/outputs:ro
-      - /home/ritik-intel/ali/pdf-parser/AIComps/comps/pdf-parser/batch_processing:/data/batch_processing:ro
-      - /home/ritik-intel/ali/pdf-parser/AIComps/comps/pdf-parser/pdfs:/data/pdfs:ro
+      - ${OUTPUTS_PATH}:/data/outputs:ro
+      - ${BATCH_PROCESSING_PATH}:/data/batch_processing:ro
+      - ${PDFS_PATH}:/data/pdfs:ro
     networks:
       - doc-flow-network
     depends_on:
